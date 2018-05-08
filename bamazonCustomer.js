@@ -64,12 +64,29 @@ inquirer.prompt([
 
     // logic for taking user's desired amount of items purchased and item id to update in DB
     // also displaying what product the user picked & calculating total based on quantity
-    // var productPicked = res[idPicked];
-    if (quantPicked < idPicked.stock_quantity) {
-        console.log(`Your total for [${quantPicked} ${idPicked}] is ${idPicked.price * quantPicked}`)
+    var productPicked = res[idPicked];
+    if (quantPicked < productPicked.stock_quantity) {
+        console.log(`Your total for 
+        [${quantPicked} : ${productPicked.product_name}] is:
+         ${productPicked.price * quantPicked}`);
+
+        //  UPDATING DATABASE
+        connection.query('UPDATE products SET ? WHERE ?',
+        [{
+            stock_quantity: productPicked.stock_quantity - quantPicked
+        }, 
+        {
+            item_id: productPicked.item_id
+        }]);
+        // run function
+        displayAndBuy();
+
+    } else {
+        console.log(`Unfortunately, we don't have enough ${productPicked.product_name} in stock. Please choose another product! `);
+        displayAndBuy();
     }
 
-    displayAndBuy();
+    
 })
 
 
